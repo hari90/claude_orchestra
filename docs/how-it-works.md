@@ -42,30 +42,11 @@ python3 tools/make_sounds.py
 
 Clips are 22.05 kHz, 16-bit mono WAV, normalized to the same peak.
 
-## Developing
+## Tests
 
-Run a session with the mod loaded from your working copy. Saving a file reloads it:
+The tests (`tests/*.test.ts`) run against the engine's test kit under `claude plugin test .`. They feed fake model responses through `turn.step`, stand in for `audio.play`, and use a mocked clock (`mock.clock(on)`), so a clip "plays" for as long as the test says and a test can make one refused or hung. A test's own hooks can't call `$.clock`; they use the mock clock's `sleep`.
 
-```
-claude --plugin-dir .
-```
-
-Check it the way the engine will read it, then run the tests:
-
-```
-claude plugin validate .
-claude plugin test .
-```
-
-Type-checking: the first time the engine loads the mod it writes this build's API types to `.claude-plugin/types/` (git-ignored). After that:
-
-```
-npx -p typescript tsc -p .
-```
-
-The tests (`tests/*.test.ts`) run against the engine's test kit: they feed fake model responses through `turn.step`, stand in for `audio.play`, and use a mocked clock so a clip "plays" for as long as the test says.
-
-To debug a live session, start it with `claude --debug-file /tmp/orchestra.log`. Every clip appears as `$.audio.play (orchestra): afplay sounds/...`, and a refused one as `refused: ...`.
+How to run the mod, check it and debug it is in [CONTRIBUTING.md](../CONTRIBUTING.md).
 
 ## Naming
 

@@ -4,7 +4,7 @@ Notes for AI agents (Claude Code and others) working in this repository.
 
 ## What this is
 
-A Claude Code mod named `orchestra` that plays sounds while Claude works. The repository root *is* the mod, and also a one-plugin marketplace. Read [docs/how-it-works.md](docs/how-it-works.md) before changing anything.
+A Claude Code mod named `orchestra` that plays sounds while Claude works. The repository root *is* the mod, and also a one-plugin marketplace. Read [docs/how-it-works.md](docs/how-it-works.md) before changing anything, and [CONTRIBUTING.md](CONTRIBUTING.md) for the development workflow.
 
 ## Commands
 

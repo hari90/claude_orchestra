@@ -33,7 +33,8 @@ Sound packs to choose from: a room of typists, an orchestra, a piano.
 
 ## More
 
-- [How it works](docs/how-it-works.md): the hooks, the sounds and how to develop the mod.
+- [Contributing](CONTRIBUTING.md): run your own copy, check it and send changes.
+- [How it works](docs/how-it-works.md): the hooks and the sounds.
 - [AGENTS.md](AGENTS.md): notes for AI agents working in this repo.
 
 ## License
