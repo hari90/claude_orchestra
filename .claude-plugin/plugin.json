@@ -1,0 +1,8 @@
+{
+  "name": "orchestra",
+  "version": "0.1.0",
+  "description": "Adds sound to your Claude session: a tick while Claude thinks, types and works.",
+  "author": { "name": "hari90" },
+  "repository": "https://github.com/hari90/claude_orchestra",
+  "license": "Apache-2.0"
+}
