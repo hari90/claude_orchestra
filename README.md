@@ -8,6 +8,11 @@
 
 Claude works quietly. With this mod you can *hear* it as Claude thinks, writes and runs tools: a soft tick, a room full of busy people, or a full orchestra.
 
+## Hear it 
+
+https://github.com/user-attachments/assets/3b2633e0-db12-46fb-a241-705d11703d18
+
+
 ## Install
 
 At the prompt of a Claude Code session in your terminal:
