@@ -11,40 +11,63 @@ claude_orchestra is a Claude Code **mod**: a plugin whose behaviour lives in a T
 hooks/
   hooks.json         names the hooks module
   register.ts        the hooks module
-sounds/              the clips the mod plays (generated, committed)
+sounds/              the clips the mod plays (committed)
+  <pack>/            one folder per pack: type0-3, think0-2, tool0-1, done0
+  tick.wav           the tick pack's one sound
+  CREDITS.md         where each recording came from, and its licence
 assets/              the logo: logo-original.jpeg and the round logo.png cut from it
 tools/
-  make_sounds.py     synthesizes sounds/ (Python stdlib only)
+  cut_recordings.py  cuts the packs out of their source recordings (stdlib only)
+  make_sounds.py     synthesizes tick.wav (stdlib only)
 tests/               `claude plugin test` suites
 ```
 
-## The hook
+## The hooks
 
-`hooks/register.ts` hooks one event, `turn.step`: one model request inside a turn, whose response streams through the hook as chunks. The hook is an async generator. It passes every chunk on unchanged, and for each chunk of the model's output (`text`, `thinking`, `tool`, `input`) it asks for a tick.
+`hooks/register.ts` reads the **Sound pack** option (`userConfig.pack` in `plugin.json`, default `busy-dev`) and plays four cues from that pack's folder:
 
-`turn.step` also covers subagents' requests, but a session has one tick voice: its main loop and all its subagents share it, so subagents keep the session ticking without making it faster. Parallel *sessions* each have their own voice and do layer.
+| Cue | When | Event |
+|---|---|---|
+| `type` | a chunk of reply text arrives (not whitespace) | `turn.step`, `text` chunk |
+| `think` | a chunk of thinking arrives | `turn.step`, `thinking` chunk |
+| `tool` | the model starts a tool call | `turn.step`, `tool` chunk |
+| `done` | the main conversation's turn ends normally | `turn.complete` |
+
+`turn.step` is one model request inside a turn, whose response streams through the hook as chunks; the hook is an async generator that passes every chunk on unchanged. `done` skips a subagent's run (`agentId` set), a turn interrupted with Esc (`isAborted`) and one that ended on an error (`reason` other than `answer`).
+
+Each cue picks one of its variants at random (`type0`-`type3`, `think0`-`think2`, `tool0`-`tool1`, `done0`). The `tick` pack plays `sounds/tick.wav` for every cue but `done`. Choosing `none` registers no hooks at all.
+
+`turn.step` also covers subagents' requests, but they share the session's voices, so subagents keep a session busy without making it louder. Parallel *sessions* each have their own voices and do layer.
 
 ## Playing sound
 
-`$.audio.play({ asset: 'sounds/tick.wav' })` plays one of the mod's own files. On macOS the engine runs `afplay`; elsewhere it plays nothing.
+`$.audio.play({ asset })` plays one of the mod's own files. On macOS the engine runs `afplay`; elsewhere it plays nothing.
 
-The engine allows **four clips at once per mod** and refuses the rest. Each clip holds its slot for as long as its `afplay` process runs, which is about half a second even for a 35 ms tick. So the mod plays **one tick at a time**: a chunk that arrives while a tick is still sounding is skipped. In practice that's two or three ticks a second while Claude streams, however fast the text arrives.
+The engine allows **four clips at once per mod** and refuses the rest. Each clip holds its slot for as long as its `afplay` process runs. So **each cue is one voice**: a cue whose last clip is still sounding is skipped, and the four cues can never ask for a fifth slot. That is also why `type` is a pre-rendered *run* of about a second of typing, not one clip per keystroke: text streams in pieces faster than `afplay` can start.
 
-Future sound packs should keep the same discipline: give each kind of sound (typing, thinking, tool call, done) its own single voice, and play a pre-rendered *run* of sound rather than many tiny clips.
+A play that hasn't settled after three seconds frees its voice anyway, so a hung `afplay` can't silence a cue for the rest of the session. The first clip that fails to play is reported once in the transcript.
 
 ## Sounds
 
-Sounds are synthesized, not recorded, by `tools/make_sounds.py`, so the repo owns every byte and needs no licences. Regenerate them after editing the script:
+The packs are **cut from real recordings** shared on Freesound; [sounds/CREDITS.md](../sounds/CREDITS.md) lists each one and its licence. The recordings aren't in the repository: `tools/cut_recordings.py` holds the exact times of every cut and rebuilds the packs from them.
 
 ```
-python3 tools/make_sounds.py
+python3 tools/cut_recordings.py --typewriter typewriter.wav --laptop laptop.wav \
+  --mechanical keyboard.wav --piano piano.wav --orchestra orchestra.wav
 ```
 
-Clips are 22.05 kHz, 16-bit mono WAV, normalized to the same peak.
+How each kind of recording is cut:
+
+- **Keyboards** (Busy Dev, Newsroom, In the Zone): typing runs from the densest stretches; thinking is two single keys taken from real typing, each with nothing after it; tool calls and done are the deepest, loudest presses (Enter, the spacebar, the carriage return, the bell). A soft limiter rounds off the sharpest strikes so typing is as loud overall as the music packs. The laptop recording is gated between keystrokes to keep its hiss down; the typewriter's bell, which always rang over a keystroke, is filtered down to its two partials.
+- **Music** (Lounge, Vienna): typing is a lively passage, thinking a soft one, tool calls a single accent, and done the piece's own ending, each faded at both ends.
+
+Every clip's peak is set by its cue (typing 0.7, thinking 0.4, tool 0.8, done 0.5), then scaled by `MASTER` (0.25) in both scripts. Change `MASTER` to make everything louder or quieter. Clips are 16-bit mono WAV at the recording's own sample rate.
+
+`tools/make_sounds.py` synthesizes the one sound that isn't recorded: `tick.wav`.
 
 ## Tests
 
-The tests (`tests/*.test.ts`) run against the engine's test kit under `claude plugin test .`. They feed fake model responses through `turn.step`, stand in for `audio.play`, and use a mocked clock (`mock.clock(on)`), so a clip "plays" for as long as the test says and a test can make one refused or hung. A test's own hooks can't call `$.clock`; they use the mock clock's `sleep`.
+The tests (`tests/*.test.ts`) run against the engine's test kit under `claude plugin test .`. They feed fake model responses through `turn.step` and turn endings through `turn.complete`, run each pack through the `pack` option, stand in for `audio.play`, and use a mocked clock (`mock.clock(on)`), so a clip "plays" for as long as the test says and a test can make one refused or hung. A test's own hooks can't call `$.clock`; they use the mock clock's `sleep`.
 
 How to run the mod, check it and debug it is in [CONTRIBUTING.md](../CONTRIBUTING.md).
 

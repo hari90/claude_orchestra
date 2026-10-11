@@ -1,8 +1,27 @@
 {
   "name": "orchestra",
-  "version": "0.1.0",
-  "description": "Adds sound to your Claude session: a tick while Claude thinks, types and works.",
-  "author": { "name": "hari90" },
+  "version": "0.2.0",
+  "description": "Adds sound to your Claude session while Claude thinks, types and works: a laptop keyboard, a typewriter, a mechanical keyboard, a lounge piano or an orchestra.",
+  "author": {
+    "name": "hari90"
+  },
   "repository": "https://github.com/hari90/claude_orchestra",
-  "license": "Apache-2.0"
+  "license": "Apache-2.0",
+  "userConfig": {
+    "pack": {
+      "type": "string",
+      "title": "Sound pack",
+      "description": "busy-dev: a laptop keyboard. newsroom: a manual typewriter. in-the-zone: a clicky mechanical keyboard. lounge: a solo piano. vienna: an orchestra. tick: a single wooden tick. none: silent.",
+      "default": "busy-dev",
+      "options": [
+        "busy-dev",
+        "newsroom",
+        "in-the-zone",
+        "lounge",
+        "vienna",
+        "tick",
+        "none"
+      ]
+    }
+  }
 }

@@ -22,14 +22,30 @@ Requires macOS (sound plays through the built-in `afplay`). On Linux and Windows
 
 ## What you'll hear
 
-- **A tick** while Claude is thinking, writing a reply or calling a tool.
-- **Silence** when Claude is idle or waiting on you.
+Each sound pack has a sound for four moments:
 
-Every session ticks on its own, so parallel sessions layer on top of each other.
+- **Writing**: while Claude types out a reply.
+- **Thinking**: softer, while Claude thinks.
+- **A tool call**: an accent each time Claude runs a tool.
+- **Done**: a closing sound when Claude finishes your turn.
 
-## Coming soon
+Nothing plays while Claude is idle or waiting on you. Every session plays on its own, so parallel sessions layer on top of each other.
 
-Sound packs to choose from: a room of typists, an orchestra, a piano.
+## Pick your sound
+
+Run `/config`, find **orchestra → Sound pack**, and choose:
+
+| Pack | Sounds like |
+|---|---|
+| **Busy Dev** (default) | A laptop keyboard: soft, quick taps |
+| **Newsroom** | A manual typewriter, with a carriage return and a bell |
+| **In the Zone** | A clicky mechanical keyboard |
+| **Lounge** | A solo piano |
+| **Vienna** | A live orchestra |
+| **Tick** | A single soft tick |
+| **None** | Silence |
+
+The packs are cut from real recordings shared on [Freesound](https://freesound.org/); see [the credits](sounds/CREDITS.md).
 
 ## More
 

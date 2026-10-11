@@ -1,34 +1,49 @@
 import type { EngineInterface, Register } from 'claude-code'
 
+type Cue = 'type' | 'think' | 'tool' | 'done'
+
+// The packs a person can pick: each a folder under sounds/, and "tick", the
+// original single sound. "none" is silence.
+const PACKS = ['busy-dev', 'newsroom', 'in-the-zone', 'lounge', 'vienna', 'tick'] as const
+// How many variants of each cue every pack has (sounds/<pack>/<cue><n>.wav).
+const VARIANTS: Record<Cue, number> = { type: 4, think: 3, tool: 2, done: 1 }
 // A play that has not settled by then is given up on, so a hung afplay or a
-// lost promise can never silence the mod for the rest of the session.
+// lost promise can never silence a cue for the rest of the session.
 const STUCK_MS = 3000
 
-// The engine lets a mod play four clips at once and refuses the rest, and each
-// clip holds its slot for as long as afplay runs (about half a second), so one
-// tick plays at a time: a tick still sounding skips the next.
-let isTicking = false
-// Which tick holds the voice, so a late release of an earlier one is ignored.
-let tickId = 0
+let pack: string = 'busy-dev'
+// The engine lets a mod play four clips at once and refuses the rest, so each
+// cue is one voice: a cue still sounding skips, and four cues never collide.
+// Each holds the id of the play holding it, or 0 when free.
+const sounding: Record<Cue, number> = { type: 0, think: 0, tool: 0, done: 0 }
+let lastId = 0
 let hasReportedError = false
 
 function report($: EngineInterface, err: unknown): void {
   if (hasReportedError) return
   hasReportedError = true
-  $.ui.log(`orchestra: a tick could not play: ${String(err)}`)
+  $.ui.log(`orchestra: a sound could not play: ${String(err)}`)
 }
 
-function tick($: EngineInterface): void {
-  if (isTicking) return
-  isTicking = true
-  const id = ++tickId
+// The file a cue plays in the chosen pack, or undefined for none: the tick
+// pack ticks while Claude works and stays quiet when a turn ends.
+function asset(cue: Cue): string | undefined {
+  if (pack === 'tick') return cue === 'done' ? undefined : 'sounds/tick.wav'
+  return `sounds/${pack}/${cue}${Math.floor(Math.random() * VARIANTS[cue])}.wav`
+}
+
+function play($: EngineInterface, cue: Cue): void {
+  const file = asset(cue)
+  if (!file || sounding[cue]) return
+  const id = ++lastId
+  sounding[cue] = id
   const release = () => {
-    if (tickId === id) isTicking = false
+    if (sounding[cue] === id) sounding[cue] = 0
   }
   $.clock.after(STUCK_MS, release)
   try {
     void $.audio
-      .play({ asset: 'sounds/tick.wav' })
+      .play({ asset: file })
       .catch(err => report($, err))
       .finally(release)
   } catch (err) {
@@ -37,14 +52,26 @@ function tick($: EngineInterface): void {
   }
 }
 
-export const register: Register = on => {
-  // Ticks while the model streams: thinking, text and tool calls alike.
+export const register: Register = (on, options) => {
+  const choice = String(options.pack ?? 'busy-dev')
+  if (!(PACKS as readonly string[]).includes(choice)) return // "none": no hooks, no sound
+  pack = choice
+
+  // The model's response as it streams: writing, thinking, starting a tool call.
   on('turn.step', async function* ($, e, next) {
     const stream = next(e)
     for await (const chunk of stream) {
-      if (chunk.kind !== 'engine' && chunk.kind !== 'stop') tick($)
+      if (chunk.kind === 'text' && chunk.text.trim()) play($, 'type')
+      else if (chunk.kind === 'thinking') play($, 'think')
+      else if (chunk.kind === 'tool') play($, 'tool')
       yield chunk
     }
     return stream.result
+  })
+
+  // The main conversation's turn ending normally; not a subagent's, not an Esc.
+  on('turn.complete', async ($, e, next) => {
+    if (e.agentId === undefined && !e.isAborted && e.reason === 'answer') play($, 'done')
+    return next(e)
   })
 }

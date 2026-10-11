@@ -6,12 +6,13 @@ import math, os, random, struct, wave
 
 SR = 22050
 OUT = os.path.join(os.path.dirname(__file__), "..", "sounds")
+MASTER = 0.25  # the same master volume as tools/cut_recordings.py
 
 
 def write(name, samples):
     path = os.path.join(OUT, name + ".wav")
     os.makedirs(os.path.dirname(path), exist_ok=True)
-    scale = 0.85 / max(1e-9, max(abs(s) for s in samples))
+    scale = MASTER * 0.85 / max(1e-9, max(abs(s) for s in samples))
     with wave.open(path, "wb") as w:
         w.setnchannels(1)
         w.setsampwidth(2)

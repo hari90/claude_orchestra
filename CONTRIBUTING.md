@@ -33,9 +33,9 @@ To have every Claude Code session load your working copy, in any project and wit
 
 Use the path to your clone. This is how you live with your changes before they ship. Remove the line to go back to the published version.
 
-### Don't load it twice
+### Uninstall the published copy
 
-If you've also installed `orchestra` from the marketplace, disable it with `/plugin` while you develop. Otherwise both copies run and every tick plays twice. To try the published version again, turn it back on and run `claude plugin update`.
+If you've installed `orchestra` from the marketplace, uninstall it while you develop: `claude plugin uninstall orchestra@claude_orchestra`. A plugin installed under the same name blocks `--plugin-dir .` from loading your copy, even while it's disabled, and nothing says so. Install it again when you want to try the published version.
 
 ## Check your change
 
@@ -55,13 +55,15 @@ Then listen: run a session with your copy and give Claude something that thinks,
 
 ## Change the sounds
 
-Sounds are synthesized by `tools/make_sounds.py`, not recorded. Edit the script, then regenerate:
+The packs are cut from recordings on Freesound by `tools/cut_recordings.py`; the recordings themselves aren't in the repo. To recut a pack, download its recording (links in [sounds/CREDITS.md](sounds/CREDITS.md)), adjust the cut times or processing in the script, and run it with the recording's path:
 
 ```
-python3 tools/make_sounds.py
+python3 tools/cut_recordings.py --typewriter ~/Downloads/typewriter.wav
 ```
 
-Commit the script and the regenerated files in `sounds/` together. Recorded samples are welcome only if their licence allows redistribution under Apache 2.0; say where they came from in your pull request.
+Commit the script and the regenerated files in `sounds/` together.
+
+A new recording is welcome only if its licence allows redistribution under Apache 2.0: CC0 or CC BY, never a NonCommercial (NC) licence. Add it to `sounds/CREDITS.md` with its link, author and licence. A new pack needs a folder with the same files as the others (`type0`-`type3`, `think0`-`think2`, `tool0`-`tool1`, `done0`), an entry in the `pack` option's `options` in `plugin.json`, one in `PACKS` in `hooks/register.ts`, and a test.
 
 ## Debug a live session
 
