@@ -8,10 +8,9 @@
 
 Claude works quietly. With this mod you can *hear* it as Claude thinks, writes and runs tools: a soft tick, a room full of busy people, or a full orchestra.
 
-## Hear it 
+## Hear it
 
 https://github.com/user-attachments/assets/3b2633e0-db12-46fb-a241-705d11703d18
-
 
 ## Install
 
@@ -23,7 +22,10 @@ At the prompt of a Claude Code session in your terminal:
 
 Answer `y` to add the marketplace, then pick a scope (user scope plays in every session). That's it: send a prompt and listen.
 
-Requires macOS (sound plays through the built-in `afplay`). On Linux and Windows the mod loads but stays silent.
+### Requirements
+
+- **A recent Claude Code with mods.** Mods are an early-access feature of Claude Code. This mod is built and tested on Claude Code 2.1.296; check yours with `claude --version`. On an older version it may not load.
+- **macOS.** Sound plays through the built-in `afplay`. On Linux and Windows the mod loads but stays silent.
 
 ## What you'll hear
 

@@ -4,7 +4,7 @@ Thanks for helping make Claude sound better. This page covers how to run, check 
 
 ## You'll need
 
-- **Claude Code**, a recent version. Mods are early access, and the API changes between releases.
+- **Claude Code**, a recent version (the mod is built and tested on 2.1.296). Mods are early access, and the API changes between releases.
 - **macOS** to hear anything. Sound plays through `afplay`; on Linux and Windows the mod loads but stays silent, and the tests still run.
 - **Python 3** to regenerate sounds (standard library only).
 - **Node and npx**, only for type-checking.
