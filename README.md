@@ -1,4 +1,8 @@
-# claude_orchestra
+<p align="center">
+  <img src="assets/logo.png" alt="Claude Orchestra logo: a conductor among musical notes" width="240">
+</p>
+
+# Claude Orchestra
 
 **Add some music to your Claude session, and turn your multi-agent workflows into an orchestra.**
 

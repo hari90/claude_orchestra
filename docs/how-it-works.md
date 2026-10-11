@@ -12,6 +12,7 @@ hooks/
   hooks.json         names the hooks module
   register.ts        the hooks module
 sounds/              the clips the mod plays (generated, committed)
+assets/              the logo: logo-original.jpeg and the round logo.png cut from it
 tools/
   make_sounds.py     synthesizes sounds/ (Python stdlib only)
 tests/               `claude plugin test` suites
