@@ -14,7 +14,7 @@ Thanks for helping make Claude sound better. This page covers how to run, check 
 Clone the repo and start Claude Code with the mod loaded from your files:
 
 ```
-git clone https://github.com/hari90/claude_orchestra
+git clone https://github.com/lemonade-ai/claude_orchestra
 cd claude_orchestra
 claude --plugin-dir .
 ```

@@ -17,7 +17,7 @@ https://github.com/user-attachments/assets/3b2633e0-db12-46fb-a241-705d11703d18
 At the prompt of a Claude Code session in your terminal:
 
 ```
-/plugin install orchestra --marketplace hari90/claude_orchestra
+/plugin install orchestra --marketplace lemonade-ai/claude_orchestra
 ```
 
 Answer `y` to add the marketplace, then pick a scope (user scope plays in every session). That's it: send a prompt and listen.

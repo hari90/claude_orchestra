@@ -2,7 +2,7 @@
   "name": "claude_orchestra",
   "description": "Sound for your Claude sessions: turn multi-agent workflows into an orchestra.",
   "owner": {
-    "name": "hari90"
+    "name": "lemonade-ai"
   },
   "plugins": [
     {
